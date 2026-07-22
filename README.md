@@ -1,16 +1,4 @@
 # Diffusion-Based Anomaly Detection for Multivariate Time Series
-
-Course project for **ECE1508: Deep Generative Models** (Sun, Thaliath, Hooman).
-This is the *simplified* version of the proposal that responds to the TA's review:
-
-> *"Could you clarify which dataset you will use and how you will ensure the
-> training data are mostly normal? ... focus on the core comparison first and
-> keep the inter-variable-aware / multi-resolution extension optional. Please
-> also report training and inference costs, since efficiency is one of your main
-> research questions."*
-
-Each of those points is addressed below and is baked into the code.
-
 ---
 
 ## 1. What we build (the core comparison)
