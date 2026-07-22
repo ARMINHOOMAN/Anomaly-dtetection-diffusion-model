@@ -148,17 +148,16 @@ code/
 
 ## 7. References
 
-How each paper maps onto the design: [3], [6] support the selective
-"restore-anomaly-preserve-normal" design; [1], [2] the masking design; [4] the
-partial-diffusion scoring; [5], [7] the comparison methodology; [8], [9] the
-baselines.
+**How each paper maps onto the design:** [3], [6] → the selective "restore-anomaly / preserve-normal" design; [1], [2] → the masking design; [4] → partial-diffusion scoring; [5], [7] → the comparison methodology; [8], [9] → the baselines.
 
-[1] ImDiffusion: Imputed Diffusion Models for Multivariate Time Series Anomaly Detection (Chen et al., 2023, Proc. VLDB Endow.)
-[2] Imputation-based Time-Series Anomaly Detection with Conditional Weight-Incremental Diffusion Models (Xiao et al., 2023, KDD)
-[3] Selective Denoising Diffusion Model for Time Series Anomaly Detection (Obata et al., 2026, ArXiv)
-[4] AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise (Wyatt et al., 2022, CVPRW)
-[5] Time Series Anomaly Detection using Diffusion-based Models (Pintilie et al., 2023, ICDMW)
-[6] Anomaly Detection for Telemetry Time Series Using a Denoising Diffusion Probabilistic Model (Sui et al., 2024, IEEE Sensors Journal)
-[7] Unsupervised Anomaly Detection for Multivariate Time Series Using Diffusion Model (Hu et al., 2024, ICASSP)
-[8] LSTM-Based VAE-GAN for Time-Series Anomaly Detection (Niu et al., 2020, Sensors)
-[9] Reconstruction-Based Methods for Multivariate Time Series Anomaly Detection: A Review and Taxonomy (Errachidi et al., 2025)
+1. **ImDiffusion: Imputed Diffusion Models for Multivariate Time Series Anomaly Detection** — Chen et al., 2023, *Proc. VLDB Endow.*
+2. **Imputation-based Time-Series Anomaly Detection with Conditional Weight-Incremental Diffusion Models** — Xiao et al., 2023, *KDD*
+3. **Selective Denoising Diffusion Model for Time Series Anomaly Detection** — Obata et al., 2026, *arXiv*
+4. **AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise** — Wyatt et al., 2022, *CVPRW*
+5. **Time Series Anomaly Detection using Diffusion-based Models** — Pintilie et al., 2023, *ICDMW*
+6. **Anomaly Detection for Telemetry Time Series Using a Denoising Diffusion Probabilistic Model** — Sui et al., 2024, *IEEE Sensors Journal*
+7. **Unsupervised Anomaly Detection for Multivariate Time Series Using Diffusion Model** — Hu et al., 2024, *ICASSP*
+8. **LSTM-Based VAE-GAN for Time-Series Anomaly Detection** — Niu et al., 2020, *Sensors*
+9. **Reconstruction-Based Methods for Multivariate Time Series Anomaly Detection: A Review and Taxonomy** — Errachidi et al., 2025
+
+
