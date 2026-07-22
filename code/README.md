@@ -16,10 +16,6 @@ diffusion regimes, plus one encoder–decoder baseline:
 Everything shares the same backbone, window size, normalisation, diffusion
 schedule and DDIM sampler, so differences come from the noise design only.
 
-**Kept optional (not in the core comparison), exactly as the TA suggested:**
-BeatGAN adversarial baseline, inter-variable-aware selective denoising, and
-multi-resolution decomposition. Hooks/notes for these are left in the code but
-they are not needed to answer the three research questions.
 
 ## 2. Dataset & the normality assumption
 
