@@ -1,6 +1,17 @@
-# Anomaly-dtetection-diffusion-model
+# Diffusion-Based Anomaly Detection for Multivariate Time Series
 
+Course project for **ECE1508: Deep Generative Models** (Sun, Thaliath, Hooman).
+This is the *simplified* version of the proposal that responds to the TA's review:
 
+> *"Could you clarify which dataset you will use and how you will ensure the
+> training data are mostly normal? ... focus on the core comparison first and
+> keep the inter-variable-aware / multi-resolution extension optional. Please
+> also report training and inference costs, since efficiency is one of your main
+> research questions."*
+
+Each of those points is addressed below and is baked into the code.
+
+---
 
 ## 1. What we build (the core comparison)
 
@@ -18,6 +29,10 @@ diffusion regimes, plus one encoder–decoder baseline:
 Everything shares the same backbone, window size, normalisation, diffusion
 schedule and DDIM sampler, so differences come from the noise design only.
 
+**Kept optional (not in the core comparison), exactly as the TA suggested:**
+BeatGAN adversarial baseline, inter-variable-aware selective denoising, and
+multi-resolution decomposition. Hooks/notes for these are left in the code but
+they are not needed to answer the three research questions.
 
 ## 2. Dataset & the normality assumption
 
@@ -60,7 +75,7 @@ onto the series (averaging windows that cover each timestep):
   TSAD convention — reported *alongside*, not instead of, the raw F1), and the
   threshold-free **ROC-AUC** and **PR-AUC** (PR-AUC matters under the heavy class
   imbalance typical of TSAD).
-- **Cost**: trainable **parameter count**,
+- **Cost** (the TA's efficiency question): trainable **parameter count**,
   **training wall-clock**, and **inference wall-clock**, all logged automatically.
 
 ## 4. Running it
@@ -131,10 +146,13 @@ code/
   run_experiments.py # trains everything, writes the results + cost table
 ```
 
-## 7. References 
+## 7. References
 
+How each paper maps onto the design: [3], [6] support the selective
+"restore-anomaly-preserve-normal" design; [1], [2] the masking design; [4] the
+partial-diffusion scoring; [5], [7] the comparison methodology; [8], [9] the
+baselines.
 
-References
 [1] ImDiffusion: Imputed Diffusion Models for Multivariate Time Series Anomaly Detection (Chen et al., 2023, Proc. VLDB Endow.)
 [2] Imputation-based Time-Series Anomaly Detection with Conditional Weight-Incremental Diffusion Models (Xiao et al., 2023, KDD)
 [3] Selective Denoising Diffusion Model for Time Series Anomaly Detection (Obata et al., 2026, ArXiv)
@@ -144,6 +162,3 @@ References
 [7] Unsupervised Anomaly Detection for Multivariate Time Series Using Diffusion Model (Hu et al., 2024, ICASSP)
 [8] LSTM-Based VAE-GAN for Time-Series Anomaly Detection (Niu et al., 2020, Sensors)
 [9] Reconstruction-Based Methods for Multivariate Time Series Anomaly Detection: A Review and Taxonomy (Errachidi et al., 2025)
-
-Upgrade to Consensus Pro to return 20 results per search instead of 10, and include more data like study design and key takeaways for every result.: https://consensus.app/pricing/?utm_source=claude_desktop
-
