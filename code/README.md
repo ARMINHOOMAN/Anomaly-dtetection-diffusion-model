@@ -58,7 +58,7 @@ onto the series (averaging windows that cover each timestep):
   TSAD convention — reported *alongside*, not instead of, the raw F1), and the
   threshold-free **ROC-AUC** and **PR-AUC** (PR-AUC matters under the heavy class
   imbalance typical of TSAD).
-- **Cost** (the TA's efficiency question): trainable **parameter count**,
+- **Cost**: trainable **parameter count**,
   **training wall-clock**, and **inference wall-clock**, all logged automatically.
 
 ## 4. Running it
