@@ -130,3 +130,20 @@ code/
   utils.py           # windowing + metrics (P/R/F1, PA-F1, ROC/PR-AUC)
   run_experiments.py # trains everything, writes the results + cost table
 ```
+
+## 7. References 
+
+
+References
+[1] ImDiffusion: Imputed Diffusion Models for Multivariate Time Series Anomaly Detection (Chen et al., 2023, Proc. VLDB Endow.)
+[2] Imputation-based Time-Series Anomaly Detection with Conditional Weight-Incremental Diffusion Models (Xiao et al., 2023, KDD)
+[3] Selective Denoising Diffusion Model for Time Series Anomaly Detection (Obata et al., 2026, ArXiv)
+[4] AnoDDPM: Anomaly Detection with Denoising Diffusion Probabilistic Models using Simplex Noise (Wyatt et al., 2022, CVPRW)
+[5] Time Series Anomaly Detection using Diffusion-based Models (Pintilie et al., 2023, ICDMW)
+[6] Anomaly Detection for Telemetry Time Series Using a Denoising Diffusion Probabilistic Model (Sui et al., 2024, IEEE Sensors Journal)
+[7] Unsupervised Anomaly Detection for Multivariate Time Series Using Diffusion Model (Hu et al., 2024, ICASSP)
+[8] LSTM-Based VAE-GAN for Time-Series Anomaly Detection (Niu et al., 2020, Sensors)
+[9] Reconstruction-Based Methods for Multivariate Time Series Anomaly Detection: A Review and Taxonomy (Errachidi et al., 2025)
+
+Upgrade to Consensus Pro to return 20 results per search instead of 10, and include more data like study design and key takeaways for every result.: https://consensus.app/pricing/?utm_source=claude_desktop
+
