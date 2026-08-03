@@ -17,8 +17,17 @@ Usage:
 """
 import argparse
 import time
+import warnings
 import numpy as np
 import pandas as pd
+
+if int(np.__version__.split(".")[0]) >= 2:
+    warnings.warn(
+        "NumPy 2.x may be incompatible with the installed PyTorch wheel. "
+        "Install `numpy<2` or upgrade PyTorch built with NumPy 2 support.",
+        UserWarning,
+    )
+
 import torch
 from torch.utils.data import DataLoader
 
