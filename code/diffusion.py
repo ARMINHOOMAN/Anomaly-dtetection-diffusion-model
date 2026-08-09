@@ -49,7 +49,7 @@ class GaussianDiffusion(nn.Module):
         # raw instance without adding noise, so a large start inverts the score.
         frac = d.t_start_frac
         if frac is None:
-            frac = {"vanilla": 0.6, "masking": 0.5, "selective": 0.3}[mode]
+            frac = {"vanilla": d.infer_t_frac, "masking": 0.5, "selective": 0.3}[mode]
         self.t_start = max(1, min(d.T - 1, int(frac * d.T)))
 
         betas = torch.linspace(d.beta_start, d.beta_end, d.T)

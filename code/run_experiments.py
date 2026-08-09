@@ -17,8 +17,17 @@ Usage:
 """
 import argparse
 import time
+import warnings
 import numpy as np
 import pandas as pd
+
+if int(np.__version__.split(".")[0]) >= 2:
+    warnings.warn(
+        "NumPy 2.x may be incompatible with the installed PyTorch wheel. "
+        "Install `numpy<2` or upgrade PyTorch built with NumPy 2 support.",
+        UserWarning,
+    )
+
 import torch
 from torch.utils.data import DataLoader
 
@@ -82,6 +91,8 @@ def main():
     ap.add_argument("--epochs", type=int, default=None)
     ap.add_argument("--window", type=int, default=None)
     ap.add_argument("--infer-steps", type=int, default=None)
+    ap.add_argument("--infer-t-frac", type=float, default=None,
+                    help="start denoising from this fraction of T")
     ap.add_argument("--test-stride", type=int, default=1)
     ap.add_argument("--quick", action="store_true")
     ap.add_argument("--out", default="../results")
@@ -94,6 +105,8 @@ def main():
         cfg.data.window = args.window
     if args.infer_steps:
         cfg.diff.infer_steps = args.infer_steps
+    if args.infer_t_frac is not None:
+        cfg.diff.infer_t_frac = args.infer_t_frac
     if args.epochs:
         cfg.train.epochs = args.epochs
     if args.quick:

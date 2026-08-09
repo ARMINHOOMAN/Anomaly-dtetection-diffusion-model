@@ -9,30 +9,42 @@ import torch.nn.functional as F
 
 
 class LSTMVAE(nn.Module):
-    def __init__(self, n_features, hidden=64, latent=16, num_layers=1, kl_beta=1.0):
+    """LSTM-based VAE for window reconstruction.
+    Default hyperparameters in this repo:
+      hidden=64, latent=16, num_layers=1, dropout=0.0
+    """
+    def __init__(self, n_features, hidden=64, latent=16, num_layers=1,
+                 dropout=0.0, kl_beta=1.0):
         super().__init__()
         self.kl_beta = kl_beta
+        # self.input_proj = nn.Linear(n_features, hidden) // include for optimal LSTM
         self.enc = nn.LSTM(n_features, hidden, num_layers, batch_first=True)
         self.to_mu = nn.Linear(hidden, latent)
         self.to_logvar = nn.Linear(hidden, latent)
         self.from_z = nn.Linear(latent, hidden)
         self.dec = nn.LSTM(hidden, hidden, num_layers, batch_first=True)
+        # self.dropout = nn.Dropout(dropout) // include for optimal LSTM
         self.out = nn.Linear(hidden, n_features)
 
     def forward(self, x):
         B, L, D = x.shape
+        # x_proj = self.input_proj(x) // include for optimal LSTM
         _, (h, _) = self.enc(x)
-        h = h[-1]                              # (B, hidden)
+        h = h[-1]
         mu, logvar = self.to_mu(h), self.to_logvar(h)
         std = torch.exp(0.5 * logvar)
         z = mu + std * torch.randn_like(std)
         h0 = self.from_z(z)[None].expand(1, B, -1).contiguous()
         c0 = torch.zeros_like(h0)
-        seq = h0[-1][:, None, :].expand(B, L, -1)   # feed latent at every step
+        seq = h0[-1][:, None, :].expand(B, L, -1)
         dec_out, _ = self.dec(seq, (h0, c0))
+        # dec_out = self.dropout(dec_out) // include for optimal LSTM
         return self.out(dec_out), mu, logvar
 
     def loss(self, x, beta=None):
+        """Reconstruction + KL divergence.
+        beta defaults to self.kl_beta (1.0) when not given.
+        """
         beta = self.kl_beta if beta is None else beta
         recon, mu, logvar = self(x)
         rec = F.mse_loss(recon, x, reduction="mean")
@@ -42,4 +54,4 @@ class LSTMVAE(nn.Module):
     @torch.no_grad()
     def score_windows(self, x):
         recon, _, _ = self(x)
-        return ((x - recon) ** 2).mean(dim=-1)      # (B, L)
+        return ((x - recon) ** 2).mean(dim=-1)

@@ -35,7 +35,7 @@ class DiffusionConfig:
     beta_start: float = 1e-4
     beta_end: float = 2e-2
     infer_steps: int = 10          # DDIM steps used at scoring time (cheap)
-    infer_t_frac: float = 0.5      # start denoising from this fraction of T
+    infer_t_frac: float = 0.6      # start denoising from this fraction of T
     mask_ratio: float = 0.2        # selective-denoising: fraction of noised elements
     n_impute_masks: int = 4        # masking mode: interleaved temporal masks
     observe_ratio: float = 0.7     # masking mode: fraction of timesteps kept observed
