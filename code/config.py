@@ -26,6 +26,7 @@ class ModelConfig:
     ff_dim: int = 128
     dropout: float = 0.1
     latent_dim: int = 16           # LSTM-VAE latent size
+    kl_beta: float = 1.0           # LSTM-VAE KL weight (sweepable)
 
 
 @dataclass
@@ -37,6 +38,9 @@ class DiffusionConfig:
     infer_t_frac: float = 0.5      # start denoising from this fraction of T
     mask_ratio: float = 0.2        # selective-denoising: fraction of noised elements
     n_impute_masks: int = 4        # masking mode: interleaved temporal masks
+    observe_ratio: float = 0.7     # masking mode: fraction of timesteps kept observed
+    t_start_frac: float | None = None  # override the per-mode DDIM start fraction; None=default
+    noiseless_weight: float = 0.5  # DEPRECATED/IGNORED: selective now uses a single full-tensor MSE (kept for config compatibility)
 
 
 @dataclass

@@ -121,7 +121,8 @@ def main():
 
     # ---- LSTM-VAE baseline -------------------------------------------------
     print("\n[LSTM-VAE]")
-    vae = LSTMVAE(D, hidden=cfg.model.d_model, latent=cfg.model.latent_dim).to(device)
+    vae = LSTMVAE(D, hidden=cfg.model.d_model, latent=cfg.model.latent_dim,
+                  kl_beta=cfg.model.kl_beta).to(device)
     tt = train_loop(lambda xb: vae.loss(xb), vae.parameters(), loader,
                     cfg.train.epochs, cfg.train.lr, cfg.train.weight_decay, device)
     vae.eval()

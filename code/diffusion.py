@@ -16,6 +16,7 @@ apples-to-apples and cheap enough to run on CPU.
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from backbone import Denoiser
 
@@ -41,12 +42,15 @@ class GaussianDiffusion(nn.Module):
         self.infer_steps = d.infer_steps
         self.mask_ratio = d.mask_ratio
         self.K = d.n_impute_masks
+        self.observe_ratio = d.observe_ratio
         self.n_score_samples = 2          # average a couple of draws to cut variance
         # Each noise design needs its own starting corruption level. Selective
         # denoising in particular must start from a *small* level -- it edits the
         # raw instance without adding noise, so a large start inverts the score.
-        frac = {"vanilla": 0.6, "masking": 0.5, "selective": 0.3}[mode]
-        self.t_start = max(1, int(frac * d.T))
+        frac = d.t_start_frac
+        if frac is None:
+            frac = {"vanilla": 0.6, "masking": 0.5, "selective": 0.3}[mode]
+        self.t_start = max(1, min(d.T - 1, int(frac * d.T)))
 
         betas = torch.linspace(d.beta_start, d.beta_end, d.T)
         alphas = 1.0 - betas
@@ -70,18 +74,23 @@ class GaussianDiffusion(nn.Module):
 
         elif self.mode == "masking":
             # random subset of timesteps become imputation targets
-            obs = (torch.rand(B, L, 1, device=dev) > 0.3).float()
+            obs = (torch.rand(B, L, 1, device=dev) < self.observe_ratio).float()
             x_noised = self.q_sample(x0, t, noise)
             x_t = obs * x0 + (1 - obs) * x_noised
             inp = torch.cat([x_t, obs * x0, obs.expand(-1, -1, D)], dim=-1)
             target, lmask = noise, (1 - obs).expand(-1, -1, D)
 
         elif self.mode == "selective":
-            # only a fraction of elements get noise; rest stay clean
+            # AnomalyFilter (Obata et al. 2026): cell-wise Bernoulli mask and masked noise
+            # eps_t = B (x) zeta (Eq. 9); the model regresses the *full* masked-noise tensor
+            # eps_t directly (Eq. 10) as a single full-tensor MSE -- B=1 cells -> zeta, B=0
+            # cells -> 0. Matches the authors' released code (which uses L1; we keep MSE to
+            # hold the loss type controlled across vanilla/masking/selective).
             nmask = (torch.rand_like(x0) < self.mask_ratio).float()
-            x_noised = self.q_sample(x0, t, noise)
-            x_t = (1 - nmask) * x0 + nmask * x_noised
-            inp, target, lmask = x_t, noise, nmask
+            eps_target = nmask * noise
+            x_t = self.q_sample(x0, t, eps_target)
+            pred = self.model(x_t, t)
+            return F.mse_loss(pred, eps_target, reduction="mean")
         else:
             raise ValueError(self.mode)
 
@@ -121,16 +130,19 @@ class GaussianDiffusion(nn.Module):
             return x0_pred
 
         if self.mode == "selective":
-            # no noise added: iteratively pull the raw instance toward the normal
-            # manifold at a fixed moderate level. Normal parts sit still; anomalous
-            # parts (which look like removable noise) get dragged, so |x - x_hat|
-            # localises the anomaly.
-            t = torch.full((B,), self.t_start, device=dev)
-            x_t = x0.clone()
-            for _ in range(self.infer_steps):
-                eps = self.model(x_t, t)
-                x_t = self._x0_from_eps(x_t, self.t_start, eps)
-            return x_t
+            # AnomalyFilter training + noiseless *scaled* init (Obata et al. 2026), but run
+            # the SAME shared deterministic DDIM sampler (eta=0) and the SAME infer_steps as
+            # vanilla/masking so the inference procedure and NFE stay controlled across modes.
+            # Only the init differs from vanilla: sqrt(abar_lambda)*x0 with no added noise and
+            # no Bernoulli mask. When eps_hat=0 (eta=0) this reconstructs x0 exactly.
+            x_t = self.alpha_bar[seq[0]].sqrt() * x0
+            x0_pred = x_t
+            for i in range(len(seq) - 1):
+                tc, tn = seq[i], seq[i + 1]
+                eps = self.model(x_t, torch.full((B,), tc, device=dev))
+                x0_pred = self._x0_from_eps(x_t, tc, eps)
+                x_t = self._ddim_step(x0_pred, eps, tn)
+            return x0_pred
 
         # masking: tile K interleaved temporal masks so every step is imputed once
         pos = torch.arange(L, device=dev)

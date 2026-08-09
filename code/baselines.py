@@ -9,8 +9,9 @@ import torch.nn.functional as F
 
 
 class LSTMVAE(nn.Module):
-    def __init__(self, n_features, hidden=64, latent=16, num_layers=1):
+    def __init__(self, n_features, hidden=64, latent=16, num_layers=1, kl_beta=1.0):
         super().__init__()
+        self.kl_beta = kl_beta
         self.enc = nn.LSTM(n_features, hidden, num_layers, batch_first=True)
         self.to_mu = nn.Linear(hidden, latent)
         self.to_logvar = nn.Linear(hidden, latent)
@@ -31,7 +32,8 @@ class LSTMVAE(nn.Module):
         dec_out, _ = self.dec(seq, (h0, c0))
         return self.out(dec_out), mu, logvar
 
-    def loss(self, x, beta=1.0):
+    def loss(self, x, beta=None):
+        beta = self.kl_beta if beta is None else beta
         recon, mu, logvar = self(x)
         rec = F.mse_loss(recon, x, reduction="mean")
         kld = -0.5 * torch.mean(1 + logvar - mu.pow(2) - logvar.exp())
