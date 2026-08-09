@@ -132,20 +132,21 @@ def main():
     rows = []
     score_curves = {}
 
-    # # ---- LSTM-VAE baseline -------------------------------------------------
-    # print("\n[LSTM-VAE]")
-    # vae = LSTMVAE(D, hidden=cfg.model.d_model, latent=cfg.model.latent_dim).to(device)
-    # tt = train_loop(lambda xb: vae.loss(xb), vae.parameters(), loader,
-    #                 cfg.train.epochs, cfg.train.lr, cfg.train.weight_decay, device)
-    # vae.eval()
-    # scores, it = score_series(vae.score_windows, test_series, L, device, args.test_stride)
-    # m = evaluate_scores(scores, labels)
-    # rows.append(dict(model="LSTM-VAE", params=count_params(vae),
-    #                  train_s=tt, infer_s=it, **m))
-    # score_curves["LSTM-VAE"] = scores
+    # ---- LSTM-VAE baseline -------------------------------------------------
+    print("\n[LSTM-VAE]")
+    vae = LSTMVAE(D, hidden=cfg.model.d_model, latent=cfg.model.latent_dim,
+                  kl_beta=cfg.model.kl_beta).to(device)
+    tt = train_loop(lambda xb: vae.loss(xb), vae.parameters(), loader,
+                    cfg.train.epochs, cfg.train.lr, cfg.train.weight_decay, device)
+    vae.eval()
+    scores, it = score_series(vae.score_windows, test_series, L, device, args.test_stride)
+    m = evaluate_scores(scores, labels)
+    rows.append(dict(model="LSTM-VAE", params=count_params(vae),
+                     train_s=tt, infer_s=it, **m))
+    score_curves["LSTM-VAE"] = scores
 
     # ---- diffusion regimes -------------------------------------------------
-    for mode in ["vanilla"]:#, "masking", "selective"]:
+    for mode in ["vanilla", "masking", "selective"]:
         name = f"DDPM-{mode}"
         print(f"\n[{name}]")
         diff = build_diffusion(mode, D, cfg).to(device)
